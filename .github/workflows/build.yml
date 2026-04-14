@@ -5,10 +5,7 @@ on:
     branches:
       - main
       - master
-  pull_request:
-    branches:
-      - main
-      - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,22 +17,23 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.15.0'
+          node-version: '20.19.0'
       
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 10
+        run: npm install -g pnpm
       
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --legacy-peer-deps
       
       - name: Build
         run: pnpm run build-static
+      
+      - name: Check dist folder
+        run: ls -la dist/ || echo "dist folder not found"
       
       - name: Upload dist folder
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
-          retention-days: 30
+          retention-days: 7
